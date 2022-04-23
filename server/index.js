@@ -10,17 +10,24 @@ app.listen(3000, () => {
 });
 
 app.get('/qa/questions', (req, res) => {
+  let formattedResponse = {};
+  // let questionId = req.params.question_id;
+  let productId = req.query.product_id;
+  let page = req.query.page || 1;
+  let count = req.query.count || 5;
+
   models.getQuestions({
-    product_id: req.query.product_id,
-    page: req.query.page || 1,
-    count: req.query.count || 5
+    product_id: productId,
+    page: page,
+    count: count
   })
     .then(response => {
-      // console.log({
-      //   product_id: req.query.product_id,
-      //   results: response.rows
-      // });
-      res.status(200).send(response);
+      formattedResponse = {
+        product_id: productId,
+        results: response.rows
+      }
+
+      res.status(200).send(formattedResponse);
     })
     .catch(err => {
       res.status(500).send(err);
@@ -28,6 +35,7 @@ app.get('/qa/questions', (req, res) => {
 });
 
 app.get(`/qa/questions/:question_id/answers`, (req, res) => {
+  let formattedResponse = {};
   let questionId = req.params.question_id;
   let page = req.query.page || 1;
   let count = req.query.count || 5;
@@ -38,13 +46,19 @@ app.get(`/qa/questions/:question_id/answers`, (req, res) => {
     count: count
   })
     .then(response => {
-      let formattedResponse = {
+      formattedResponse = {
         question: questionId,
         page: page,
         count: count,
         results: response.rows
       };
 
+      return Promise.all(response.rows.map(answer => models.getPhotos(answer.id)));
+    })
+    .then(photos => {
+      for (let i = 0; i < photos.length; i++) {
+        formattedResponse.results[i].photos = photos[i].rows;
+      }
       res.status(200).send(formattedResponse);
     })
     .catch(err => {
