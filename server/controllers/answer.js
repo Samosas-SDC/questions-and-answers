@@ -38,4 +38,22 @@ module.exports = {
         res.status(500).send(err);
       });
   },
+  markHelpful: function (req, res) {
+    models.answer.markHelpful(req.params.answer_id)
+      .then(response => {
+        res.sendStatus(204);
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  },
+  report: function (req, res) {
+    models.answer.report(req.params.answer_id)
+      .then(response => {
+        res.sendStatus(204);
+      })
+      .catch(err => {
+        re.status(500).send(err);
+      });
+  },
 }

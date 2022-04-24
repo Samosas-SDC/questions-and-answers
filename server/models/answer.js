@@ -23,7 +23,7 @@ module.exports = {
 
       params.photos.map((url, i) => {
         text = `INSERT INTO answerPhoto (answer_id, url)
-        VALUES (lastval(), $1)`
+        VALUES (lastval(), $1);`;
         values = [params.photos[i]];
 
         queries.push(db.query(text, values));
@@ -31,6 +31,22 @@ module.exports = {
 
       return Promise.all(queries);
     }
+
+    return db.query(text, values);
+  },
+  markHelpful: function (answerId) {
+    let text = `UPDATE answer
+      SET helpfulness=helpfulness + 1
+      WHERE id=$1;`;
+    let values = [answerId];
+
+    return db.query(text, values);
+  },
+  report: function (answerId) {
+    let text = `UPDATE answer
+      SET reported=true
+      WHERE id=$1;`;
+    let values = [answerId];
 
     return db.query(text, values);
   },
