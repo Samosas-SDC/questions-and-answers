@@ -1,7 +1,11 @@
 require('dotenv').config();
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 const models = require('./models/models');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 let PORT = process.env.SERVER_PORT || 3000;
 
@@ -27,9 +31,9 @@ app.get('/qa/questions', (req, res) => {
       }
 
       return Promise.all(response.rows.map(question => models.getAnswers({
-        question_id: question.id,
+        question_id: question.question_id,
         count: count
-      })))
+      })));
     })
     .then(answers => {
       for (let i = 0; i < answers.length; i++) {
@@ -51,7 +55,7 @@ app.get('/qa/questions', (req, res) => {
     });
 });
 
-app.get(`/qa/questions/:question_id/answers`, (req, res) => {
+app.get('/qa/questions/:question_id/answers', (req, res) => {
   let formattedResponse = {};
   let questionId = req.params.question_id;
   let page = req.query.page || 1;
@@ -71,6 +75,29 @@ app.get(`/qa/questions/:question_id/answers`, (req, res) => {
       };
 
       res.status(200).send(formattedResponse);
+    })
+    .catch(err => {
+      res.status(500).send(err);
+    });
+});
+
+app.post('/qa/questions', (req, res) => {
+  models.addQuestion(req.body)
+    .then(response => {
+      res.status(201).send(response);
+    })
+    .catch(err => {
+      res.status(500).send(err);
+    });
+});
+
+app.post('/qa/questions/:question_id/answers', (req, res) => {
+  let params = req.body;
+  params.question_id = req.params.question_id;
+
+  models.addAnswer(params)
+    .then(response => {
+      res.status(201).send(response);
     })
     .catch(err => {
       res.status(500).send(err);

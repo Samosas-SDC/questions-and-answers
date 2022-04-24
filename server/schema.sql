@@ -15,6 +15,11 @@
 --ALTER TABLE answer ALTER COLUMN reported SET DATA TYPE boolean USING reported::boolean;
 --ALTER TABLE answer ALTER COLUMN reported SET DEFAULT false;
 
+--RESET PRIMIARY KEY NEXT VAL
+--SELECT setval('question_id_seq', max(id)) FROM question;
+--SELECT setval('answer_id_seq', max(id)) FROM answer;
+--SELECT setval('answerphoto_id_seq', max(id)) FROM answerPhoto;
+
 DROP TABLE IF EXISTS question cascade;
 DROP TABLE IF EXISTS answer cascade;
 DROP TABLE IF EXISTS answerPhoto;
@@ -26,7 +31,7 @@ CREATE TABLE question (
   question_date BIGINT NOT NULL,
   asker_name VARCHAR(60) NOT NULL,
   asker_email VARCHAR(60) NOT NULL,
-  question_helpfulness INT NOT NULL,
+  question_helpfulness INT DEFAULT NULL,
   reported INT NOT NULL,
   PRIMARY KEY (id)
 );
@@ -39,7 +44,7 @@ CREATE TABLE answer (
   answerer_name VARCHAR(60) NOT NULL,
   answerer_email VARCHAR(60) NOT NULL,
   reported INT NOT NULL,
-  helpfulness INT,
+  helpfulness INT DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_question
     FOREIGN KEY (question_id)
