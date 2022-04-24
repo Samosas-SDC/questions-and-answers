@@ -31,7 +31,7 @@ CREATE TABLE question (
   question_date BIGINT NOT NULL,
   asker_name VARCHAR(60) NOT NULL,
   asker_email VARCHAR(60) NOT NULL,
-  question_helpfulness INT DEFAULT NULL,
+  question_helpfulness INT DEFAULT 0,
   reported INT NOT NULL,
   PRIMARY KEY (id)
 );
@@ -44,7 +44,7 @@ CREATE TABLE answer (
   answerer_name VARCHAR(60) NOT NULL,
   answerer_email VARCHAR(60) NOT NULL,
   reported INT NOT NULL,
-  helpfulness INT DEFAULT NULL,
+  helpfulness INT DEFAULT 0,
   PRIMARY KEY (id),
   CONSTRAINT fk_question
     FOREIGN KEY (question_id)
