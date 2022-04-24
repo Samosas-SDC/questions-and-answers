@@ -21,3 +21,7 @@ app.get('/qa/questions/:question_id/answers', controllers.answer.getAnswers);
 app.post('/qa/questions', controllers.question.addQuestion);
 
 app.post('/qa/questions/:question_id/answers', controllers.answer.addAnswer);
+
+app.put('/qa/questions/:question_id/helpful', controllers.question.markHelpful);
+
+app.put('/qa/questions/:question_id/report', controllers.question.report);

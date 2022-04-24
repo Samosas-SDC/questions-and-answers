@@ -17,4 +17,20 @@ module.exports = {
 
     return db.query(text, values);
   },
+  markHelpful: function (questionId) {
+    let text = `UPDATE question
+      SET question_helpfulness=question_helpfulness + 1
+      WHERE id=$1`;
+    let values = [questionId];
+
+    return db.query(text, values);
+  },
+  report: function (questionId) {
+    let text = `UPDATE question
+      SET reported=true
+      WHERE id=$1`;
+    let values = [questionId];
+
+    return db.query(text, values);
+  },
 }

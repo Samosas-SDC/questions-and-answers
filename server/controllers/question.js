@@ -51,4 +51,22 @@ module.exports = {
         res.status(500).send(err);
       });
   },
+  markHelpful: function (req, res) {
+    models.question.markHelpful(req.params.question_id)
+      .then(response => {
+        res.status(204).send(response);
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  },
+  report: function (req, res) {
+    models.question.report(req.params.question_id)
+      .then(response => {
+        res.status(204).send(response);
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  },
 }
