@@ -1,15 +1,6 @@
 let db = require('../db');
 
 module.exports = {
-  getQuestions: function (params) {
-    let text = `SELECT id AS question_id, question_body, question_date, asker_name, question_helpfulness, reported
-      FROM question
-      WHERE product_id=$1
-      LIMIT $2;`;
-    let values = [params.product_id, params.count];
-
-    return db.query(text, values);
-  },
   getAnswers: function (params) {
     let text = `SELECT answer.id, answer.body, answer.answer_date AS date, answer.answerer_name, answer.helpfulness, array_agg(json_build_object('id', (answerPhoto.id), 'url', (answerPhoto.url))) AS photos
       FROM answer JOIN answerPhoto ON answer.id=answerPhoto.answer_id
@@ -17,13 +8,6 @@ module.exports = {
       GROUP BY answer.id
       LIMIT $2;`;
     let values = [params.question_id, params.count];
-
-    return db.query(text, values);
-  },
-  addQuestion: function (params) {
-    let text = `INSERT INTO question (product_id, question_body, question_date, asker_name, asker_email)
-    VALUES ($1, $2, NOW(), $3, $4);`;
-    let values = [params.product_id, params.body, params.name, params.email];
 
     return db.query(text, values);
   },
