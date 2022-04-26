@@ -5,8 +5,10 @@ module.exports = {
     let text = `SELECT id AS question_id, question_body, question_date, asker_name, question_helpfulness, reported
       FROM question
       WHERE product_id=$1
-      LIMIT $2;`;
-    let values = [params.product_id, params.count];
+      ORDER BY id
+      LIMIT $2
+      OFFSET $3;`;
+    let values = [params.product_id, params.count, (params.page - 1) * params.count];
 
     return db.query(text, values);
   },

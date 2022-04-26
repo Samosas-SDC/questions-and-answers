@@ -20,6 +20,7 @@ module.exports = {
 
         return Promise.all(response.rows.map(question => models.answer.getAnswers({
           question_id: question.question_id,
+          page: page,
           count: count
         })));
       })
