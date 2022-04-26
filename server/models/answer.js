@@ -3,31 +3,19 @@ let db = require('../db');
 module.exports = {
   getAnswers: function (params) {
     let text = `SELECT answer.id, answer.body, answer.answer_date AS date, answer.answerer_name, answer.helpfulness,
-      array_agg(
-      CASE WHEN answerPhoto.id is not null THEN json_build_object('id', (answerPhoto.id), 'url', (answerPhoto.url))
-      END
-      ) AS photos
+      COALESCE(
+        ARRAY_AGG(
+          CASE
+            WHEN answerPhoto.id is not null THEN JSON_BUILD_OBJECT('id', (answerPhoto.id), 'url', (answerPhoto.url))
+          END
+        ) FILTER (WHERE answerPhoto.id is not null),
+      '{}') AS photos
       FROM answer LEFT JOIN answerPhoto ON answer.id=answerPhoto.answer_id
       WHERE answer.question_id=$1
       GROUP BY answer.id
       ORDER BY answer.id
       LIMIT $2
       OFFSET $3;`;
-
-    // let text = `SELECT answer.id, answer.body, answer.answer_date AS date, answer.answerer_name, answer.helpfulness,
-    //   CASE
-    //     WHEN answerPhoto.id is not null THEN array_agg(json_build_object('id', (answerPhoto.id), 'url', (answerPhoto.url)))
-    //     ELSE ARRAY[]::text[]
-    //   END
-    //   AS photos
-    //   FROM answer LEFT JOIN answerPhoto ON answer.id=answerPhoto.answer_id
-    //   WHERE answer.question_id=$1
-    //   GROUP BY answer.id
-    //   ORDER BY answer.id
-    //   LIMIT $2
-    //   OFFSET $3;`;
-
-    // // ELSE ('{}')
     let values = [params.question_id, params.count, (params.page - 1) * params.count];
 
     return db.query(text, values);
